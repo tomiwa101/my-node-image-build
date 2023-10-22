@@ -1,0 +1,28 @@
+name: BUILD DOCKER IMAGE AND PUSH TO DOCKER REGISTRY
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  username: ${{ secrets.USERNAME }}
+  token: ${{ secrets.TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t node-app .
+
+      - name: Log in to Docker Hub
+        run:  echo $token | docker login -u $token --password-stdin
+        
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker tag node-app $username/data2bot:latest
+          docker push $username/data2bot:latest
